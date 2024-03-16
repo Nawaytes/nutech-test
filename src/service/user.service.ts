@@ -8,7 +8,11 @@ import Users, { UserCreationAttributes } from "../database/models/user";
 export default class UserService {
   async create(input: UserCreationAttributes) {
     try {
-      const user = await Users.create(input);
+      const user = await Users.create({
+        name: input.name,
+        email: input.email,
+        password: 'asdasd'
+      });
       return user;
     } catch (error: any) {
       throw new Error(`Error creating user: ${error.message}`);

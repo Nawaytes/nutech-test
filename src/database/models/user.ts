@@ -9,27 +9,22 @@ export interface UserAttributes {
   id: number;
   name: string;
   email: string;
-  uniqueId: string;
   password: string;
-  googleUid?: string;
   createdAt?: Date;
   updatedAt?: Date;
 }
 
 export interface UserCreationAttributes
-  extends Optional<UserAttributes, "id"> {}
-export interface UserInstance extends Required<UserAttributes> {}
+  extends Optional<UserAttributes, "id"> { }
+export interface UserInstance extends Required<UserAttributes> { }
 // Sequelize Model
 class Users
   extends Model<UserAttributes, UserCreationAttributes>
-  implements UserAttributes
-{
+  implements UserAttributes {
   public id!: number;
   public name!: string;
   public email!: string;
   public password!: string;
-  public uniqueId!: string;
-  public googleUid!: string;
   public readonly createdAt!: Date;
   public readonly updatedAt!: Date;
 }
@@ -50,14 +45,6 @@ Users.init(
       allowNull: false,
     },
     password: {
-      type: new DataTypes.STRING(255),
-      allowNull: true,
-    },
-    uniqueId: {
-      type: new DataTypes.STRING(255),
-      allowNull: false,
-    },
-    googleUid: {
       type: new DataTypes.STRING(255),
       allowNull: true,
     },

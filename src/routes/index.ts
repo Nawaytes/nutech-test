@@ -1,5 +1,6 @@
 import { Request, Response, Router } from "express";
 import { UserController } from "../controllers/user";
+import { createUserValidation } from "../helper/validator/postUser.validator";
 
 export default class MainRouter {
   router: Router;
@@ -21,23 +22,5 @@ export default class MainRouter {
       });
     });
 
-    this.router
-      .route("/users/:id")
-      .get((req: Request, res: Response) => this.userController.read(req, res))
-      .put((req: Request, res: Response) =>
-        this.userController.update(req, res)
-      )
-      .delete((req: Request, res: Response) =>
-        this.userController.delete(req, res)
-      );
-
-    this.router
-      .route("/users")
-      .get((req: Request, res: Response) =>
-        this.userController.paginate(req, res)
-      )
-      .post((req: Request, res: Response) =>
-        this.userController.create(req, res)
-      );
   }
 }

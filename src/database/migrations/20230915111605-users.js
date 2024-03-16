@@ -27,10 +27,6 @@ module.exports = {
       password: {
         type: Sequelize.STRING(255),
       },
-      uniqueId: {
-        type: Sequelize.STRING(255),
-        allowNull: true,
-      },
       createdAt: {
         type: Sequelize.DATE,
         defaultValue: Sequelize.literal("CURRENT_TIMESTAMP"),

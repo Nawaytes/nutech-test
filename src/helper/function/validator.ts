@@ -1,15 +1,22 @@
-import Validator from "fastest-validator";
-import { BadRequestException } from "../Error/BadRequestException/BadRequestException";
+import { ValidationChain, validationResult } from 'express-validator';
+import { HttpStatusCode } from "axios";
+import { NextFunction, Request, Response } from "express";
 
-export async function validate(schema: any, data: any) {
-  try {
-    const v = new Validator();
-    const check = v.compile(schema);
-    const result = check(data);
-    if (result !== true) {
-      throw new BadRequestException("Invalid data", result);
+const validate = (validations: ValidationChain[]) => {
+  return async (req: Request, res: Response, next: NextFunction) => {
+    // eslint-disable-next-line prefer-const
+    for (let validation of validations) {
+      const result = await validation.run(req);
+      if (result.array().length) break;
     }
-  } catch (error) {
-    throw new BadRequestException("Invalid data", error);
-  }
-}
+
+    const errors = validationResult(req);
+    if (errors.isEmpty()) {
+      return next();
+    }
+
+    res.status(HttpStatusCode.BadRequest).json({ errors: errors.array() });
+  };
+};
+
+export default validate
