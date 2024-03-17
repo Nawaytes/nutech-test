@@ -4,6 +4,8 @@ import { HttpStatusCode } from "axios";
 import { ProcessError } from "../helper/Error/errorHandler";
 import { BadRequestException } from "../helper/Error/BadRequestException/BadRequestException";
 import Users from "../database/models/user";
+import { ResponseApi } from "../helper/interface/response.interface";
+import { messages } from "../config/message";
 
 export class UserController {
   userServices: UserService;
@@ -12,14 +14,15 @@ export class UserController {
     this.userServices = new UserService();
   }
 
-
-  async create(req: Request, res: Response) {
+  async create(req: Request, res: Response<ResponseApi<void>>) {
     try {
-      const user = await this.userServices.create(req.body);
-      res.json(user.toJSON());
+      const response = await this.userServices.create(req.body);
+      res.json({
+        statusCode: HttpStatusCode.Created,
+        message: response,
+      });
     } catch (err) {
       ProcessError(err, res);
     }
   }
-
 }

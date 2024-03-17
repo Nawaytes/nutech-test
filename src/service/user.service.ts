@@ -1,73 +1,40 @@
+import argon from "argon2";
 import { Op } from "sequelize";
+import Users, { UserCreationAttributes } from "../database/models/user";
 import { BadRequestException } from "../helper/Error/BadRequestException/BadRequestException";
-import { NotFoundException } from "../helper/Error/NotFound/NotFoundException";
 import { removeLimitAndPage } from "../helper/function/filteredData";
 import { IPaginate } from "../helper/interface/paginate/paginate.interface";
-import Users, { UserCreationAttributes } from "../database/models/user";
+import { CreateUserDto } from "../dto/user/postUser.dto";
 
 export default class UserService {
-  async create(input: UserCreationAttributes) {
+  async create(input: CreateUserDto) {
     try {
-      const user = await Users.create({
-        name: input.name,
-        email: input.email,
-        password: 'asdasd'
+      console.log(input);
+      await this.isEmailExist(input.email);
+
+      console.log("before create");
+      await Users.create({
+        ...input,
+        password: await argon.hash(input.password),
       });
-      return user;
-    } catch (error: any) {
-      throw new Error(`Error creating user: ${error.message}`);
-    }
-  }
-
-  async gets(conditions: Partial<UserCreationAttributes>) {
-    try {
-      const users = await Users.findAll({ where: conditions });
-      return users;
-    } catch (error: any) {
-      throw new Error(`Error getting users: ${error.message}`);
-    }
-  }
-
-  async findOne(conditions: Partial<UserCreationAttributes>) {
-    try {
-      const user = await Users.findOne({ where: conditions });
-      if (!user) throw new NotFoundException("Users not found", {});
-      return user;
-    } catch (error: any) {
+      console.log("after create");
+      return `user ${input.email} created`;
+    } catch (error) {
       throw error;
     }
   }
 
-  async getById(id: number) {
+  async isEmailExist(email: string) {
     try {
-      const user = await Users.findByPk(id);
-      if (!user) throw new NotFoundException("Users not found", {});
-      return user;
-    } catch (error: any) {
-      throw error;
-    }
-  }
-
-  async deleteById(id: number) {
-    try {
-      const user = await Users.destroy({ where: { id } });
-      if (!user) throw new NotFoundException("Users not found", {});
-      return user;
-    } catch (error: any) {
-      throw error;
-    }
-  }
-
-  async updateById(
-    id: number,
-    input: Partial<UserCreationAttributes>
-  ): Promise<Users> {
-    try {
-      const user = await Users.update(input, { where: { id } });
-      if (!user) throw new NotFoundException("Users not found", {});
-      const result = await this.getById(id);
-      return result;
-    } catch (error: any) {
+      const user = await Users.findOne({
+        where: {
+          email,
+        },
+      });
+      if (user) {
+        throw new BadRequestException("Email is already exist");
+      }
+    } catch (error) {
       throw error;
     }
   }
