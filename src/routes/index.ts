@@ -1,6 +1,5 @@
 import { Request, Response, Router } from "express";
 import { UserController } from "../controllers/user";
-import { createUserValidation } from "../helper/validator/postUser.validator";
 
 export default class MainRouter {
   router: Router;

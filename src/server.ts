@@ -5,8 +5,7 @@ import helmet from "helmet";
 import cors from "cors";
 import { Routes } from "./routerSetup";
 import { messages } from "./config/message";
-import expressListEndpoints from 'express-list-endpoints';
-import "reflect-metadata";
+import expressListEndpoints from "express-list-endpoints";
 
 const Reset = '\x1b[0m';
 // const FgRed = '\x1b[31m';
