@@ -15,10 +15,16 @@ export default class UserRouter {
 
   private serve() {
     this.router
+      .route("/detail/:id")
+      .get((req: Request, res: Response) =>
+        this.userController.detail(req, res)
+      );
+    this.router
       .route("")
       .post(
         validationMiddleware(CreateUserDto),
         (req: Request, res: Response) => this.userController.create(req, res)
       );
+
   }
 }

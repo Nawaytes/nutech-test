@@ -5,6 +5,7 @@ import { BadRequestException } from "../helper/Error/BadRequestException/BadRequ
 import { removeLimitAndPage } from "../helper/function/filteredData";
 import { IPaginate } from "../helper/interface/paginate/paginate.interface";
 import { CreateUserDto } from "../dto/user/postUser.dto";
+import { NotFoundException } from "../helper/Error/NotFound/NotFoundException";
 
 export default class UserService {
   async create(input: CreateUserDto) {
@@ -34,6 +35,23 @@ export default class UserService {
       if (user) {
         throw new BadRequestException("Email is already exist");
       }
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async detail(userId: number): Promise<Users> {
+    try {
+      const user = await Users.findOne({
+        where: {
+          id: userId,
+        },
+        attributes: ["id", "name", "email"],
+      });
+      if (!user) {
+        throw new NotFoundException("user not found");
+      }
+      return user;
     } catch (error) {
       throw error;
     }

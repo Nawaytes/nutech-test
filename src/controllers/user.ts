@@ -21,8 +21,22 @@ export class UserController {
         statusCode: HttpStatusCode.Created,
         message: response,
       });
-    } catch (err) {
-      ProcessError(err, res);
+    } catch (error) {
+      ProcessError(error, res);
+    }
+  }
+
+  async detail(req: Request, res: Response<ResponseApi<Users>>) {
+    try {
+      const id = parseInt(req.params.id);
+      const response = await this.userServices.detail(id);
+      res.json({
+        statusCode: HttpStatusCode.Created,
+        message: messages.SUCCESS,
+        data:response
+      });
+    } catch (error) {
+      ProcessError(error, res);
     }
   }
 }
