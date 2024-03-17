@@ -27,13 +27,21 @@ module.exports = {
       password: {
         type: Sequelize.STRING(255),
       },
-      createdAt: {
+      created_at: {
         type: Sequelize.DATE,
         defaultValue: Sequelize.literal("CURRENT_TIMESTAMP"),
+        allowNull: false,
       },
-      updatedAt: {
+      updated_at: {
         type: Sequelize.DATE,
-        defaultValue: Sequelize.literal("CURRENT_TIMESTAMP"),
+        defaultValue: Sequelize.literal(
+          "CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP"
+        ),
+        allowNull: false,
+      },
+      deleted_at: {
+        type: Sequelize.DATE,
+        defaultValue: null,
       },
     });
   },

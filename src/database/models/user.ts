@@ -1,41 +1,31 @@
-import { DataTypes, Model, Optional } from "sequelize";
-import Database from "../../config/db";
+import { DataTypes, Optional } from "sequelize";
+import BaseModel, {
+  BaseModelAttributes,
+  baseModelConfig,
+  baseModelInit,
+} from "./base.model";
 
-// Database connection instance
-const databaseInstance = Database.database;
-
-// User Interface
-export interface UserAttributes {
-  id: number;
+export interface UserAttributes extends BaseModelAttributes {
   name: string;
   email: string;
   password: string;
-  createdAt?: Date;
-  updatedAt?: Date;
 }
 
 export interface UserCreationAttributes
-  extends Optional<UserAttributes, "id"> { }
-export interface UserInstance extends Required<UserAttributes> { }
-// Sequelize Model
+  extends Optional<UserAttributes, "id"> {}
+export interface UserInstance extends Required<UserAttributes> {}
 class Users
-  extends Model<UserAttributes, UserCreationAttributes>
-  implements UserAttributes {
-  public id!: number;
+  extends BaseModel<UserAttributes, UserCreationAttributes>
+  implements UserAttributes
+{
   public name!: string;
   public email!: string;
   public password!: string;
-  public readonly createdAt!: Date;
-  public readonly updatedAt!: Date;
 }
 
 Users.init(
   {
-    id: {
-      type: DataTypes.INTEGER,
-      autoIncrement: true,
-      primaryKey: true,
-    },
+    ...baseModelInit,
     name: {
       type: new DataTypes.STRING(255),
       allowNull: false,
@@ -49,10 +39,7 @@ Users.init(
       allowNull: true,
     },
   },
-  {
-    tableName: "users",
-    sequelize: databaseInstance,
-  }
+  { ...baseModelConfig, tableName: "users" }
 );
 
 export default Users;
