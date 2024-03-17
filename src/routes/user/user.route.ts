@@ -1,8 +1,7 @@
 import { Request, Response, Router } from "express";
 import { UserController } from "../../controllers/user";
-import { createUserValidation } from "../../helper/validator/postUser.validator";
-import { validationMiddleware } from "../../middleware/validation.middleware";
 import { CreateUserDto } from "../../dto/user/postUser.dto";
+import { validationMiddleware } from "../../middleware/validation.middleware";
 
 export default class UserRouter {
   router: Router;
@@ -15,10 +14,11 @@ export default class UserRouter {
   }
 
   private serve() {
-    this.router.route("").post(
-      // createUserValidation()
-      validationMiddleware(CreateUserDto),
-      (req: Request, res: Response) => this.userController.create(req, res)
-    );
+    this.router
+      .route("")
+      .post(
+        validationMiddleware(CreateUserDto),
+        (req: Request, res: Response) => this.userController.create(req, res)
+      );
   }
 }
