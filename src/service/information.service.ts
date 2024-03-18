@@ -1,28 +1,31 @@
-import Banners from "../database/models/banners.model";
-import Services from "../database/models/services.model";
+import Database from "./mysql.service";
 
 export class InformationService {
-  async getAllBanners(): Promise<Banners[]> {
+  async getAllBanners(): Promise<any> {
+    await Database.connect();
     try {
-      return await Banners.findAll({
-        attributes: ["banner_name", "banner_image", "description"],
-      });
+      const [rows, _] = await Database.connection.execute(
+        "SELECT banner_name,banner_image,description FROM banners"
+      );
+      await Database.disconnect();
+      return rows;
     } catch (error) {
+      await Database.disconnect();
       throw error;
     }
   }
 
-  async getAllServices(): Promise<Services[]> {
+  async getAllServices(): Promise<any> {
+    await Database.connect();
     try {
-      return await Services.findAll({
-        attributes: [
-          "service_code",
-          "service_name",
-          "service_icon",
-          "service_tariff",
-        ],
-      });
+      const [rows, _] = await Database.connection.execute(
+        "SELECT service_code,service_name,service_icon,service_tariff FROM services"
+      );
+      await Database.disconnect();
+
+      return rows;
     } catch (error) {
+      await Database.disconnect();
       throw error;
     }
   }
