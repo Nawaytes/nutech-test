@@ -1,5 +1,5 @@
 import argon from "argon2";
-import Users from "../database/models/user";
+import Users, { UserCreationAttributes } from "../database/models/user";
 import { CreateUserDto } from "../dto/user/postUser.dto";
 import { BadRequestException } from "../helper/Error/BadRequestException/BadRequestException";
 import { NotFoundException } from "../helper/Error/NotFound/NotFoundException";
@@ -51,7 +51,10 @@ export default class UserService {
     }
   }
 
-  async updateById(userId: number, input: UpdateProfileDTO): Promise<Users> {
+  async updateProfileById(
+    userId: number,
+    input: UpdateProfileDTO
+  ): Promise<Users> {
     try {
       await Users.update(
         {
@@ -62,7 +65,12 @@ export default class UserService {
         }
       );
 
-      return this.getById(userId,["email", "first_name", "last_name", "profile_image"])
+      return this.getById(userId, [
+        "email",
+        "first_name",
+        "last_name",
+        "profile_image",
+      ]);
     } catch (error) {
       throw error;
     }
@@ -76,6 +84,18 @@ export default class UserService {
       });
       if (!user) throw new Error();
       return user;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async updateById(
+    id: number,
+    conditions: Partial<UserCreationAttributes>
+  ): Promise<Users> {
+    try {
+      await Users.update({ ...conditions }, { where: { id } });
+      return await this.getById(id);
     } catch (error) {
       throw error;
     }

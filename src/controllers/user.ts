@@ -42,7 +42,7 @@ export class UserController {
 
   async updateProfile(req: Request, res: Response<ResponseApi<Users>>) {
     try {
-      const response = await this.userServices.updateById(
+      const response = await this.userServices.updateProfileById(
         req.user.id,
         req.body
       );

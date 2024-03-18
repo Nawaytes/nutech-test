@@ -16,4 +16,19 @@ export class TransactionService {
       throw error;
     }
   }
+
+  async topup(userId: number, topUpAmount: any): Promise<number> {
+    try {
+      const user = await this.userService.getById(userId);
+      const newBalance: number =
+        parseInt(user.balance as unknown as string) + topUpAmount;
+
+      const newData = await this.userService.updateById(userId, {
+        balance: newBalance,
+      });
+      return parseInt(newData.balance as unknown as string);
+    } catch (error) {
+      throw error;
+    }
+  }
 }

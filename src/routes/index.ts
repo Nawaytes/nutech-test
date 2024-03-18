@@ -76,5 +76,11 @@ export default class MainRouter {
       .get(jwtMiddleware(), (req: Request, res: Response) =>
         this.trxController.getBalance(req, res)
       );
+
+      this.router
+        .route("/topup")
+        .post(jwtMiddleware(), (req: Request, res: Response) =>
+          this.trxController.topup(req, res)
+        );
   }
 }

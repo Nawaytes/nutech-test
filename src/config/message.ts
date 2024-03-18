@@ -9,4 +9,6 @@ export enum messages {
   FAILED_LOGIN = "Username atau password salah",
   UNAUTHORIZED = "Token tidak tidak valid atau kadaluwarsa",
   SUCCESS_GET_BALANCE = "Get Balance Berhasil",
+  SUCCESS_TOP_UP_BALANCE = "Top Up Balance berhasil",
+  BAD_REQUEST_TOP_UP = "Paramter amount hanya boleh angka dan tidak boleh lebih kecil dari 0",
 }
