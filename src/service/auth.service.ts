@@ -41,7 +41,7 @@ export class AuthService {
 
   async generateToken(payload: any) {
     return jwt.sign(payload, configConstants.JWT_SECRET_ACCESS_TOKEN, {
-      expiresIn: "3h",
+      expiresIn: "5h",
     });
   }
 }

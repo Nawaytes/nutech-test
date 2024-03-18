@@ -3,6 +3,7 @@ import Users from "../database/models/user";
 import { CreateUserDto } from "../dto/user/postUser.dto";
 import { BadRequestException } from "../helper/Error/BadRequestException/BadRequestException";
 import { NotFoundException } from "../helper/Error/NotFound/NotFoundException";
+import { UpdateProfileDTO } from "../dto/updateProfile.dto";
 
 export default class UserService {
   async create(input: CreateUserDto) {
@@ -44,6 +45,30 @@ export default class UserService {
       if (!user) {
         throw new NotFoundException("user not found");
       }
+      return user;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async updateById(userId: number, input: UpdateProfileDTO): Promise<Users> {
+    try {
+      await Users.update(
+        {
+          ...input,
+        },
+        {
+          where: { id: userId },
+        }
+      );
+
+      const user = await Users.findOne({
+        where: { id: userId },
+        attributes: ["email", "first_name", "last_name", "profile_image"],
+      });
+
+      if (!user) throw new Error();
+
       return user;
     } catch (error) {
       throw error;

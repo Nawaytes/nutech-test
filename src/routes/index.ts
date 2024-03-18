@@ -5,6 +5,7 @@ import { CreateUserDto } from "../dto/user/postUser.dto";
 import { AuthController } from "../controllers/auth.controller";
 import { LoginDto } from "../dto/auth/login.dto";
 import { jwtMiddleware } from "../middleware/jwt.middleware";
+import { UpdateProfileDTO } from "../dto/updateProfile.dto";
 
 export default class MainRouter {
   router: Router;
@@ -46,5 +47,12 @@ export default class MainRouter {
       .get(jwtMiddleware(), (req: Request, res: Response) =>
         this.userController.detail(req, res)
       );
+    this.router.put(
+      "/profile/update",
+      jwtMiddleware(),
+      validationMiddleware(UpdateProfileDTO),
+      (req: Request, res: Response) =>
+        this.userController.updateProfile(req, res)
+    );
   }
 }

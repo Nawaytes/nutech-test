@@ -39,4 +39,20 @@ export class UserController {
       ProcessError(error, res);
     }
   }
+
+  async updateProfile(req: Request, res: Response<ResponseApi<Users>>) {
+    try {
+      const response = await this.userServices.updateById(
+        req.user.id,
+        req.body
+      );
+      res.json({
+        status: 0,
+        message: messages.SUCCESS,
+        data: response,
+      });
+    } catch (error) {
+      ProcessError(error, res);
+    }
+  }
 }
