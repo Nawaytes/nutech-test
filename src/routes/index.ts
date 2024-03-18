@@ -92,5 +92,10 @@ export default class MainRouter {
         (req: Request, res: Response) =>
           this.trxController.transaction(req, res)
       );
+      this.router
+        .route("/transaction/history")
+        .get(jwtMiddleware(), (req: Request, res: Response) =>
+          this.trxController.page(req, res)
+        );
   }
 }

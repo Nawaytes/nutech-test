@@ -1,10 +1,10 @@
-import { Request, Response } from "express";
-import { TransactionService } from "../service/transaction.service";
-import { ProcessError } from "../helper/Error/errorHandler";
-import { ResponseApi } from "../helper/interface/response.interface";
 import { HttpStatusCode } from "axios";
+import { Request, Response } from "express";
 import { messages } from "../config/message";
 import { BadRequestException } from "../helper/Error/BadRequestException/BadRequestException";
+import { ProcessError } from "../helper/Error/errorHandler";
+import { ResponseApi } from "../helper/interface/response.interface";
+import { TransactionService } from "../service/transaction.service";
 
 export class TransactionController {
   trxService: TransactionService;
@@ -63,6 +63,22 @@ export class TransactionController {
       res.status(HttpStatusCode.Ok).json({
         status: 0,
         message: messages.SUCCESS_TRANSACTION,
+        data: response,
+      });
+    } catch (error) {
+      ProcessError(error, res);
+    }
+  }
+
+  async page(req: Request, res: Response) {
+    try {
+      const offset = parseInt((req.query.offset as string) ?? "1");
+      const limit = parseInt((req.query.limit as string) ?? "5");
+      const userId = req.user.id;
+      const response = await this.trxService.page(userId, offset, limit);
+      res.status(HttpStatusCode.Ok).json({
+        status: 0,
+        messages: messages.SUCCESS,
         data: response,
       });
     } catch (error) {

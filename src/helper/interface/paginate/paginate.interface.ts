@@ -1,5 +1,5 @@
 export interface IPaginate<T> {
-  page: number;
+  offset: number;
   limit: number;
-  data: Partial<T>;
+  records: Partial<T>;
 }
