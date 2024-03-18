@@ -6,16 +6,19 @@ import { AuthController } from "../controllers/auth.controller";
 import { LoginDto } from "../dto/auth/login.dto";
 import { jwtMiddleware } from "../middleware/jwt.middleware";
 import { UpdateProfileDTO } from "../dto/updateProfile.dto";
+import { InformationController } from "../controllers/information.controllers";
 
 export default class MainRouter {
   router: Router;
   userController: UserController;
   authController: AuthController;
+  informationController: InformationController;
 
   constructor() {
     // Initialize controllers objects
     this.userController = new UserController();
     this.authController = new AuthController();
+    this.informationController = new InformationController();
 
     // Initialize router object
     this.router = Router({ mergeParams: true });
@@ -54,5 +57,10 @@ export default class MainRouter {
       (req: Request, res: Response) =>
         this.userController.updateProfile(req, res)
     );
+    this.router
+      .route("/banner")
+      .get((req: Request, res: Response) =>
+        this.informationController.getAllBanners(req, res)
+      );
   }
 }
