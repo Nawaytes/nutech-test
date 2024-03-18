@@ -54,4 +54,19 @@ export class TransactionController {
       ProcessError(error, res);
     }
   }
+
+  async transaction(req: Request, res: Response<ResponseApi<any>>) {
+    try {
+      const body = req.body;
+      const response = await this.trxService.transaction(req.user.id, body);
+
+      res.status(HttpStatusCode.Ok).json({
+        status: 0,
+        message: messages.SUCCESS_TRANSACTION,
+        data: response,
+      });
+    } catch (error) {
+      ProcessError(error, res);
+    }
+  }
 }

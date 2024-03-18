@@ -9,7 +9,7 @@ export interface ServiceAttributes extends BaseModelAttributes {
   serviceCode: string;
   serviceName: string;
   serviceIcon: string;
-  serviceTariff: string;
+  serviceTariff: number;
 }
 
 export interface ServicesCreationAttributes
@@ -24,7 +24,7 @@ class Services
   serviceCode!: string;
   serviceName!: string;
   serviceIcon!: string;
-  serviceTariff!: string;
+  serviceTariff!: number;
 }
 
 Services.init(

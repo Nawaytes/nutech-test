@@ -1,11 +1,13 @@
+import { DateTime } from "luxon";
 import { Op } from "sequelize";
 import InvoiceNo from "../database/models/invoiceNo.model";
 import TransactionModel from "../database/models/transactions.model";
-import Users from "../database/models/user";
-import { ProcessError } from "../helper/Error/errorHandler";
 import { ITransaction } from "../helper/interface/transaction/transaction.interface";
 import UserService from "./user.service";
-import { DateTime } from "luxon";
+import { TransactionDto } from "../dto/transaction.dto";
+import Services from "../database/models/services.model";
+import { BadRequestException } from "../helper/Error/BadRequestException/BadRequestException";
+import { messages } from "../config/message";
 
 export class TransactionService {
   userService: UserService;
@@ -39,6 +41,50 @@ export class TransactionService {
         userId,
       });
       return parseInt(newData.balance as unknown as string);
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async transaction(userId: number, input: TransactionDto) {
+    try {
+      const service = await Services.findOne({
+        where: {
+          serviceCode: input.service_code,
+        },
+      });
+
+      const user = await this.userService.getById(userId);
+
+      if (!service) {
+        throw new BadRequestException(messages.SERVICE_NOT_FOUND, 102);
+      }
+      const balance = parseInt(user.balance as unknown as string);
+      const tarif = parseInt(service.serviceTariff as unknown as string);
+      if (balance < tarif) {
+        throw new BadRequestException(messages.BALACE_NOT_ENOUGH, 102);
+      }
+      const newBalance = balance - tarif;
+      const transaction = await this.recordTransaction({
+        serviceCode: service.serviceCode,
+        serviceName: service.serviceName,
+        totalAmount: service.serviceTariff,
+        transactionType: "PAYMENT",
+        userId,
+      });
+
+      await this.userService.updateById(userId, {
+        balance: newBalance,
+      });
+
+      return {
+        invoice_number: transaction.invoiceNumber,
+        service_code: transaction.serviceCode,
+        service_name: transaction.serviceName,
+        transaction_type: transaction.transactionType,
+        total_amount: transaction.totalAmount,
+        created_on: transaction.createdAt,
+      };
     } catch (error) {
       throw error;
     }

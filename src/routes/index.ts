@@ -8,6 +8,7 @@ import { jwtMiddleware } from "../middleware/jwt.middleware";
 import { UpdateProfileDTO } from "../dto/updateProfile.dto";
 import { InformationController } from "../controllers/information.controllers";
 import { TransactionController } from "../controllers/transaction.controller";
+import { TransactionDto } from "../dto/transaction.dto";
 
 export default class MainRouter {
   router: Router;
@@ -77,10 +78,19 @@ export default class MainRouter {
         this.trxController.getBalance(req, res)
       );
 
-      this.router
-        .route("/topup")
-        .post(jwtMiddleware(), (req: Request, res: Response) =>
-          this.trxController.topup(req, res)
-        );
+    this.router
+      .route("/topup")
+      .post(jwtMiddleware(), (req: Request, res: Response) =>
+        this.trxController.topup(req, res)
+      );
+
+    this.router
+      .route("/transaction")
+      .post(
+        jwtMiddleware(),
+        validationMiddleware(TransactionDto),
+        (req: Request, res: Response) =>
+          this.trxController.transaction(req, res)
+      );
   }
 }

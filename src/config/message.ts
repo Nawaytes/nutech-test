@@ -11,4 +11,7 @@ export enum messages {
   SUCCESS_GET_BALANCE = "Get Balance Berhasil",
   SUCCESS_TOP_UP_BALANCE = "Top Up Balance berhasil",
   BAD_REQUEST_TOP_UP = "Paramter amount hanya boleh angka dan tidak boleh lebih kecil dari 0",
+  SERVICE_NOT_FOUND = "Service ataus Layanan tidak ditemukan",
+  BALACE_NOT_ENOUGH = "Saldo anda tidak cukup",
+  SUCCESS_TRANSACTION = "Transaksi berhasil",
 }
