@@ -19,7 +19,7 @@ export interface TransactionCreationAttributes
 
 export interface TransactionInterface extends Required<TransactionAttributes> {}
 
-class Transaction
+class TransactionModel
   extends BaseModel<TransactionAttributes, TransactionCreationAttributes>
   implements TransactionAttributes
 {
@@ -31,7 +31,7 @@ class Transaction
   userId!: number;
 }
 
-Transaction.init(
+TransactionModel.init(
   {
     ...baseModelInit,
     invoiceNumber: {
@@ -66,4 +66,4 @@ Transaction.init(
   { ...baseModelConfig, tableName: "transactions" }
 );
 
-export default Transaction;
+export default TransactionModel;
