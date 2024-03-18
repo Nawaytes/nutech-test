@@ -62,5 +62,10 @@ export default class MainRouter {
       .get((req: Request, res: Response) =>
         this.informationController.getAllBanners(req, res)
       );
+    this.router
+      .route("/services")
+      .get(jwtMiddleware(), (req: Request, res: Response) =>
+        this.informationController.getAllServices(req, res)
+      );
   }
 }

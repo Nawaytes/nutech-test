@@ -26,7 +26,7 @@ export function jwtMiddleware() {
       next();
     } catch (error) {
       return res.status(HttpStatusCode.Unauthorized).json({
-        status: 102,
+        status: 108,
         message: messages.UNAUTHORIZED,
         data: null,
       });

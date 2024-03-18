@@ -6,8 +6,8 @@ import BaseModel, {
 } from "./base.model";
 
 export interface BannerAttributes extends BaseModelAttributes {
-  banner_name: string;
-  banner_image: string;
+  bannerName: string;
+  bannerImage: string;
   description: string;
 }
 
@@ -20,19 +20,19 @@ class Banners
   extends BaseModel<BannerAttributes, BannerCreationAttributes>
   implements BannerAttributes
 {
-  banner_name!: string;
-  banner_image!: string;
+  bannerName!: string;
+  bannerImage!: string;
   description!: string;
 }
 
 Banners.init(
   {
     ...baseModelInit,
-    banner_name: {
+    bannerName: {
       type: new DataTypes.STRING(255),
       allowNull: false,
     },
-    banner_image: {
+    bannerImage: {
       type: new DataTypes.STRING(255),
       allowNull: false,
     },
