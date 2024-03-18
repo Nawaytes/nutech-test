@@ -5,7 +5,7 @@ import { NextFunction, Request, Response } from "express";
 import { messages } from "../config/message";
 import { ResponseApi } from "../helper/interface/response.interface";
 
-export function validationMiddleware<T>(dtoClass: any) {
+export function validationMiddleware(dtoClass: any) {
   return async (
     req: Request,
     res: Response<ResponseApi<null>>,

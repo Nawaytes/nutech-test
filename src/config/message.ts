@@ -1,5 +1,5 @@
 export enum messages {
-  SUCCESS = "Success",
+  SUCCESS = "Sukses",
   CREATED = "Created",
   NOT_FOUND = "Not Found",
   API_NOT_FOUND = "API Not Found",
@@ -7,4 +7,5 @@ export enum messages {
   SUCCESS_REGISTRATION = "Registrasi berhasil silahkan login",
   SUCCESS_LOGIN = "Login Sukses",
   FAILED_LOGIN = "Username atau password salah",
+  UNAUTHORIZED = "Token tidak tidak valid atau kadaluwarsa",
 }

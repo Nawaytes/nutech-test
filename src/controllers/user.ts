@@ -29,10 +29,9 @@ export class UserController {
 
   async detail(req: Request, res: Response<ResponseApi<Users>>) {
     try {
-      const id = parseInt(req.params.id);
-      const response = await this.userServices.detail(id);
+      const response = await this.userServices.detail(req.user.id);
       res.json({
-        status: HttpStatusCode.Created,
+        status: 0,
         message: messages.SUCCESS,
         data: response,
       });

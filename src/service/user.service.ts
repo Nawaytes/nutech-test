@@ -7,7 +7,6 @@ import { NotFoundException } from "../helper/Error/NotFound/NotFoundException";
 export default class UserService {
   async create(input: CreateUserDto) {
     try {
-      console.log(input);
       await this.isEmailExist(input.email);
       await Users.create({
         ...input,
@@ -40,7 +39,7 @@ export default class UserService {
         where: {
           id: userId,
         },
-        attributes: ["id", "name", "email"],
+        attributes: ["email", "first_name", "last_name", "profile_image"],
       });
       if (!user) {
         throw new NotFoundException("user not found");

@@ -4,6 +4,7 @@ import { validationMiddleware } from "../middleware/validation.middleware";
 import { CreateUserDto } from "../dto/user/postUser.dto";
 import { AuthController } from "../controllers/auth.controller";
 import { LoginDto } from "../dto/auth/login.dto";
+import { jwtMiddleware } from "../middleware/jwt.middleware";
 
 export default class MainRouter {
   router: Router;
@@ -38,6 +39,12 @@ export default class MainRouter {
       .route("/login")
       .post(validationMiddleware(LoginDto), (req: Request, res: Response) =>
         this.authController.login(req, res)
+      );
+
+    this.router
+      .route("/profile")
+      .get(jwtMiddleware(), (req: Request, res: Response) =>
+        this.userController.detail(req, res)
       );
   }
 }
