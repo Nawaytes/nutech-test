@@ -12,13 +12,13 @@ export interface ServiceAttributes extends BaseModelAttributes {
   serviceTariff: string;
 }
 
-export interface BannerCreationAttributes
+export interface ServicesCreationAttributes
   extends Optional<ServiceAttributes, "id"> {}
 
-export interface BannerInterface extends Required<ServiceAttributes> {}
+export interface ServiceInterface extends Required<ServiceAttributes> {}
 
 class Services
-  extends BaseModel<ServiceAttributes, BannerCreationAttributes>
+  extends BaseModel<ServiceAttributes, ServicesCreationAttributes>
   implements ServiceAttributes
 {
   serviceCode!: string;

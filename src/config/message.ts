@@ -8,4 +8,5 @@ export enum messages {
   SUCCESS_LOGIN = "Login Sukses",
   FAILED_LOGIN = "Username atau password salah",
   UNAUTHORIZED = "Token tidak tidak valid atau kadaluwarsa",
+  SUCCESS_GET_BALANCE = "Get Balance Berhasil",
 }

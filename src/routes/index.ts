@@ -7,18 +7,21 @@ import { LoginDto } from "../dto/auth/login.dto";
 import { jwtMiddleware } from "../middleware/jwt.middleware";
 import { UpdateProfileDTO } from "../dto/updateProfile.dto";
 import { InformationController } from "../controllers/information.controllers";
+import { TransactionController } from "../controllers/transaction.controller";
 
 export default class MainRouter {
   router: Router;
   userController: UserController;
   authController: AuthController;
   informationController: InformationController;
+  trxController: TransactionController;
 
   constructor() {
     // Initialize controllers objects
     this.userController = new UserController();
     this.authController = new AuthController();
     this.informationController = new InformationController();
+    this.trxController = new TransactionController();
 
     // Initialize router object
     this.router = Router({ mergeParams: true });
@@ -66,6 +69,12 @@ export default class MainRouter {
       .route("/services")
       .get(jwtMiddleware(), (req: Request, res: Response) =>
         this.informationController.getAllServices(req, res)
+      );
+
+    this.router
+      .route("/balance")
+      .get(jwtMiddleware(), (req: Request, res: Response) =>
+        this.trxController.getBalance(req, res)
       );
   }
 }

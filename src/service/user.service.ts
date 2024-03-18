@@ -62,13 +62,19 @@ export default class UserService {
         }
       );
 
+      return this.getById(userId,["email", "first_name", "last_name", "profile_image"])
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async getById(userId: number, attributes?: string[]): Promise<Users> {
+    try {
       const user = await Users.findOne({
         where: { id: userId },
-        attributes: ["email", "first_name", "last_name", "profile_image"],
+        attributes: attributes,
       });
-
       if (!user) throw new Error();
-
       return user;
     } catch (error) {
       throw error;
