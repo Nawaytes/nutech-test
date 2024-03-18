@@ -1,11 +1,11 @@
-import { Request, Response } from "express";
-import UserService from "../service/user.service";
 import { HttpStatusCode } from "axios";
-import { ProcessError } from "../helper/Error/errorHandler";
-import { BadRequestException } from "../helper/Error/BadRequestException/BadRequestException";
-import Users from "../database/models/user";
-import { ResponseApi } from "../helper/interface/response.interface";
+import { Request, Response } from "express";
 import { messages } from "../config/message";
+import Users from "../database/models/user";
+import { ProcessError } from "../helper/Error/errorHandler";
+import { ResponseApi } from "../helper/interface/response.interface";
+import UserService from "../service/user.service";
+import { error } from "console";
 
 export class UserController {
   userServices: UserService;
@@ -54,5 +54,18 @@ export class UserController {
     } catch (error) {
       ProcessError(error, res);
     }
+  }
+
+  async updateImage(req: Request, res: Response) {
+    const userId = req.user.id;
+    const fileName = req.file?.filename;
+
+    if (!fileName) throw error;
+    const response = await this.userServices.updateImage(userId, req.file!);
+    res.json({
+      status: 0,
+      message: messages.SUCCESS,
+      data: response,
+    });
   }
 }

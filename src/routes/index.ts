@@ -9,6 +9,7 @@ import { UpdateProfileDTO } from "../dto/updateProfile.dto";
 import { InformationController } from "../controllers/information.controllers";
 import { TransactionController } from "../controllers/transaction.controller";
 import { TransactionDto } from "../dto/transaction.dto";
+import { multerMiddleware } from "../middleware/multer.middleware";
 
 export default class MainRouter {
   router: Router;
@@ -61,6 +62,12 @@ export default class MainRouter {
       (req: Request, res: Response) =>
         this.userController.updateProfile(req, res)
     );
+    this.router.put(
+      "/profile/image",
+      jwtMiddleware(),
+      multerMiddleware,
+      (req: Request, res: Response) => this.userController.updateImage(req, res)
+    );
     this.router
       .route("/banner")
       .get((req: Request, res: Response) =>
@@ -92,10 +99,10 @@ export default class MainRouter {
         (req: Request, res: Response) =>
           this.trxController.transaction(req, res)
       );
-      this.router
-        .route("/transaction/history")
-        .get(jwtMiddleware(), (req: Request, res: Response) =>
-          this.trxController.page(req, res)
-        );
+    this.router
+      .route("/transaction/history")
+      .get(jwtMiddleware(), (req: Request, res: Response) =>
+        this.trxController.page(req, res)
+      );
   }
 }

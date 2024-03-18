@@ -1,11 +1,20 @@
 import argon from "argon2";
+import configConstants from "../config/constants";
 import Users, { UserCreationAttributes } from "../database/models/user";
+import { UpdateProfileDTO } from "../dto/updateProfile.dto";
 import { CreateUserDto } from "../dto/user/postUser.dto";
 import { BadRequestException } from "../helper/Error/BadRequestException/BadRequestException";
 import { NotFoundException } from "../helper/Error/NotFound/NotFoundException";
-import { UpdateProfileDTO } from "../dto/updateProfile.dto";
+import MinioService from "./minio.service";
+import * as fs from "fs";
 
 export default class UserService {
+  minioService: MinioService;
+
+  constructor() {
+    this.minioService = new MinioService();
+  }
+
   async create(input: CreateUserDto) {
     try {
       await this.isEmailExist(input.email);
@@ -101,25 +110,26 @@ export default class UserService {
     }
   }
 
-  // async page(input: IPaginate<UserCreationAttributes>) {
-  //   try {
-  //     const page = input.page ?? 1;
-  //     const limit = input.limit ?? 10;
-  //     const offset = Math.max(page - 1, 0) * limit;
-  //     const conditions = removeLimitAndPage(input.data);
-  //     const users = await Users.findAndCountAll({
-  //       where: {
-  //         name: {
-  //           [Op.like]: `%${conditions.name}%`,
-  //         },
-  //       },
-  //       limit,
-  //       offset: offset,
-  //       order: [["id", "DESC"]],
-  //     });
-  //     return users;
-  //   } catch (error: any) {
-  //     throw new BadRequestException(`Error paginating users: ${error.message}`);
-  //   }
-  // }
+  async updateImage(userId: number, file: Express.Multer.File) {
+    try {
+      const imageUrl = await this.minioService.uploadFile(
+        file,
+        file.filename,
+        configConstants.MINIO_BUCKET
+      );
+      const result = await this.updateById(userId, {
+        profile_image: imageUrl,
+      });
+      fs.unlinkSync(file.path);
+      return {
+        email: result.toJSON().email,
+        first_name: result.toJSON().first_name,
+        last_name: result.toJSON().last_name,
+        profile_image: result.toJSON().profile_image,
+      };
+    } catch (error) {
+      fs.unlinkSync(file.path);
+      throw error;
+    }
+  }
 }
