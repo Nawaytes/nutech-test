@@ -1,18 +1,24 @@
-import { plainToClass, plainToInstance } from "class-transformer";
+import { HttpStatusCode } from "axios";
+import { plainToInstance } from "class-transformer";
 import { validate } from "class-validator";
-import { Request, Response, NextFunction } from "express";
+import { NextFunction, Request, Response } from "express";
 import { messages } from "../config/message";
+import { ResponseApi } from "../helper/interface/response.interface";
 
 export function validationMiddleware<T>(dtoClass: any) {
-  return async (req: Request, res: Response, next: NextFunction) => {
+  return async (
+    req: Request,
+    res: Response<ResponseApi<null>>,
+    next: NextFunction
+  ) => {
     const dtoInstance = plainToInstance(dtoClass, req.body);
     const errors = await validate(dtoInstance);
 
     if (errors.length > 0) {
-      return res.status(400).json({
-        statusCode: 400,
+      return res.status(HttpStatusCode.BadRequest).json({
+        status: 102,
         message: messages.VALIDATION_ERROR,
-        errors: errors,
+        data: null,
       });
     }
 

@@ -1,15 +1,12 @@
 import express from 'express';
-import MainRouter from './routes';
-import UserRouter from './routes/user/user.route';
-
+import MainRouter from "./routes";
 
 export class Routes {
-    constructor(expressInstance: express.Express) {
-        this.routesSetup(expressInstance)
-    }
+  constructor(expressInstance: express.Express) {
+    this.routesSetup(expressInstance);
+  }
 
-    routesSetup(expressInstance: express.Express) {
-        expressInstance.use('/', new MainRouter().router)
-        expressInstance.use('/users', new UserRouter().router)
-    }
+  routesSetup(expressInstance: express.Express) {
+    expressInstance.use("/", new MainRouter().router);
+  }
 }

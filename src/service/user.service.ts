@@ -1,10 +1,7 @@
 import argon from "argon2";
-import { Op } from "sequelize";
-import Users, { UserCreationAttributes } from "../database/models/user";
-import { BadRequestException } from "../helper/Error/BadRequestException/BadRequestException";
-import { removeLimitAndPage } from "../helper/function/filteredData";
-import { IPaginate } from "../helper/interface/paginate/paginate.interface";
+import Users from "../database/models/user";
 import { CreateUserDto } from "../dto/user/postUser.dto";
+import { BadRequestException } from "../helper/Error/BadRequestException/BadRequestException";
 import { NotFoundException } from "../helper/Error/NotFound/NotFoundException";
 
 export default class UserService {
@@ -12,14 +9,11 @@ export default class UserService {
     try {
       console.log(input);
       await this.isEmailExist(input.email);
-
-      console.log("before create");
       await Users.create({
         ...input,
         password: await argon.hash(input.password),
       });
-      console.log("after create");
-      return `user ${input.email} created`;
+      return null;
     } catch (error) {
       throw error;
     }
@@ -33,7 +27,7 @@ export default class UserService {
         },
       });
       if (user) {
-        throw new BadRequestException("Email is already exist");
+        throw new BadRequestException("Email is already exist", 102);
       }
     } catch (error) {
       throw error;
@@ -57,25 +51,25 @@ export default class UserService {
     }
   }
 
-  async page(input: IPaginate<UserCreationAttributes>) {
-    try {
-      const page = input.page ?? 1;
-      const limit = input.limit ?? 10;
-      const offset = Math.max(page - 1, 0) * limit;
-      const conditions = removeLimitAndPage(input.data);
-      const users = await Users.findAndCountAll({
-        where: {
-          name: {
-            [Op.like]: `%${conditions.name}%`,
-          },
-        },
-        limit,
-        offset: offset,
-        order: [["id", "DESC"]],
-      });
-      return users;
-    } catch (error: any) {
-      throw new BadRequestException(`Error paginating users: ${error.message}`);
-    }
-  }
+  // async page(input: IPaginate<UserCreationAttributes>) {
+  //   try {
+  //     const page = input.page ?? 1;
+  //     const limit = input.limit ?? 10;
+  //     const offset = Math.max(page - 1, 0) * limit;
+  //     const conditions = removeLimitAndPage(input.data);
+  //     const users = await Users.findAndCountAll({
+  //       where: {
+  //         name: {
+  //           [Op.like]: `%${conditions.name}%`,
+  //         },
+  //       },
+  //       limit,
+  //       offset: offset,
+  //       order: [["id", "DESC"]],
+  //     });
+  //     return users;
+  //   } catch (error: any) {
+  //     throw new BadRequestException(`Error paginating users: ${error.message}`);
+  //   }
+  // }
 }

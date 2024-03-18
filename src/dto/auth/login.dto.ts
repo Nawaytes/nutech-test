@@ -1,19 +1,13 @@
 import { IsEmail, IsNotEmpty, IsString, Matches } from "class-validator";
 
-export class CreateUserDto {
+export class LoginDto {
   @IsNotEmpty()
+  @IsString()
   @IsEmail()
   email!: string;
 
   @IsNotEmpty()
   @IsString()
-  first_name!: string;
-
-  @IsNotEmpty()
-  @IsString()
-  last_name!: string;
-
-  @IsNotEmpty()
   @Matches(/.{8,}/)
   password!: string;
 }

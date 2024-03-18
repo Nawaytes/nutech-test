@@ -1,13 +1,19 @@
 import { Request, Response, Router } from "express";
 import { UserController } from "../controllers/user";
+import { validationMiddleware } from "../middleware/validation.middleware";
+import { CreateUserDto } from "../dto/user/postUser.dto";
+import { AuthController } from "../controllers/auth.controller";
+import { LoginDto } from "../dto/auth/login.dto";
 
 export default class MainRouter {
   router: Router;
   userController: UserController;
+  authController: AuthController;
 
   constructor() {
     // Initialize controllers objects
     this.userController = new UserController();
+    this.authController = new AuthController();
 
     // Initialize router object
     this.router = Router({ mergeParams: true });
@@ -21,5 +27,17 @@ export default class MainRouter {
       });
     });
 
+    this.router
+      .route("/registration")
+      .post(
+        validationMiddleware(CreateUserDto),
+        (req: Request, res: Response) => this.userController.create(req, res)
+      );
+
+    this.router
+      .route("/login")
+      .post(validationMiddleware(LoginDto), (req: Request, res: Response) =>
+        this.authController.login(req, res)
+      );
   }
 }

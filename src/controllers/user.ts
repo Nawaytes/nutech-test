@@ -14,12 +14,13 @@ export class UserController {
     this.userServices = new UserService();
   }
 
-  async create(req: Request, res: Response<ResponseApi<void>>) {
+  async create(req: Request, res: Response<ResponseApi<null>>) {
     try {
-      const response = await this.userServices.create(req.body);
+      await this.userServices.create(req.body);
       res.json({
-        statusCode: HttpStatusCode.Created,
-        message: response,
+        status: HttpStatusCode.Created,
+        message: messages.SUCCESS_REGISTRATION,
+        data: null,
       });
     } catch (error) {
       ProcessError(error, res);
@@ -31,9 +32,9 @@ export class UserController {
       const id = parseInt(req.params.id);
       const response = await this.userServices.detail(id);
       res.json({
-        statusCode: HttpStatusCode.Created,
+        status: HttpStatusCode.Created,
         message: messages.SUCCESS,
-        data:response
+        data: response,
       });
     } catch (error) {
       ProcessError(error, res);

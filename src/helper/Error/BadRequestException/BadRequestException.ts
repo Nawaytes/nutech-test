@@ -1,8 +1,11 @@
 export class BadRequestException extends Error {
-  constructor(message: string, public readonly errors?: any) {
+  constructor(message: string, status: number, public readonly errors?: any) {
     super(message);
     this.name = "BadRequestException";
     this.message = message || "Bad Request";
-    this.errors = errors || {};
+    this.errors = {
+      status,
+      errors,
+    } || { status };
   }
 }

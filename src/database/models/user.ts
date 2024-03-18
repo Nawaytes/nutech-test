@@ -6,9 +6,12 @@ import BaseModel, {
 } from "./base.model";
 
 export interface UserAttributes extends BaseModelAttributes {
-  name: string;
   email: string;
+  first_name: string;
+  last_name: string;
   password: string;
+  profile_image?: string;
+  balance?: number;
 }
 
 export interface UserCreationAttributes
@@ -18,24 +21,39 @@ class Users
   extends BaseModel<UserAttributes, UserCreationAttributes>
   implements UserAttributes
 {
-  public name!: string;
-  public email!: string;
-  public password!: string;
+  email!: string;
+  first_name!: string;
+  last_name!: string;
+  password!: string;
+  profile_image!: string;
+  balance!: number;
 }
 
 Users.init(
   {
     ...baseModelInit,
-    name: {
+    email: {
       type: new DataTypes.STRING(255),
       allowNull: false,
     },
-    email: {
+    first_name: {
+      type: new DataTypes.STRING(255),
+      allowNull: false,
+    },
+    last_name: {
       type: new DataTypes.STRING(255),
       allowNull: false,
     },
     password: {
       type: new DataTypes.STRING(255),
+      allowNull: false,
+    },
+    profile_image: {
+      type: new DataTypes.TEXT(),
+      allowNull: true,
+    },
+    balance: {
+      type: new DataTypes.DECIMAL(9, 0),
       allowNull: true,
     },
   },
