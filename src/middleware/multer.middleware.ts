@@ -43,8 +43,9 @@ export function multerMiddleware(
   upload.single("file")(req, res, function (error: any) {
     if (error) {
       return res.status(400).json({
-        httpCode: HttpStatusCode.BadRequest,
-        message: error.message,
+        status: 102,
+        message: "Format Image tidak sesuai",
+        data: null,
       });
     }
     next();

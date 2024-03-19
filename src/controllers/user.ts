@@ -1,12 +1,12 @@
 import { HttpStatusCode } from "axios";
+import { error } from "console";
 import { Request, Response } from "express";
+
 import { messages } from "../config/message";
-import Users from "../database/models/user";
 import { ProcessError } from "../helper/Error/errorHandler";
+import { IDetailUser, IUsers } from "../helper/interface/db/users.interface";
 import { ResponseApi } from "../helper/interface/response.interface";
 import UserService from "../service/user.service";
-import { error } from "console";
-import { IDetailUser, IUsers } from "../helper/interface/db/users.interface";
 
 export class UserController {
   userServices: UserService;
@@ -19,7 +19,7 @@ export class UserController {
     try {
       await this.userServices.create(req.body);
       res.json({
-        status: HttpStatusCode.Created,
+        status: 0,
         message: messages.SUCCESS_REGISTRATION,
         data: null,
       });
@@ -65,7 +65,7 @@ export class UserController {
     const response = await this.userServices.updateImage(userId, req.file!);
     res.json({
       status: 0,
-      message: messages.SUCCESS,
+      message: messages.SUCCESS_UPDATE_IMAGE,
       data: response,
     });
   }

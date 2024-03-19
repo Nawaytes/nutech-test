@@ -1,11 +1,14 @@
+import { HttpStatusCode } from "axios";
 import { Request, Response } from "express";
-import { InformationService } from "../service/information.service";
+import { messages } from "../config/message";
+
 import { ProcessError } from "../helper/Error/errorHandler";
 import { ResponseApi } from "../helper/interface/response.interface";
-import Banners from "../database/models/banners.model";
-import { messages } from "../config/message";
-import Services from "../database/models/services.model";
-import { HttpStatusCode } from "axios";
+import { InformationService } from "../service/information.service";
+import {
+  IBanner,
+  IService,
+} from "../helper/interface/db/information.interface";
 
 export class InformationController {
   informationService: InformationService;
@@ -13,7 +16,7 @@ export class InformationController {
     this.informationService = new InformationService();
   }
 
-  async getAllBanners(req: Request, res: Response<ResponseApi<Banners[]>>) {
+  async getAllBanners(req: Request, res: Response<ResponseApi<IBanner[]>>) {
     try {
       const response = await this.informationService.getAllBanners();
       res.json({
@@ -26,7 +29,7 @@ export class InformationController {
     }
   }
 
-  async getAllServices(req: Request, res: Response<ResponseApi<Services[]>>) {
+  async getAllServices(req: Request, res: Response<ResponseApi<IService[]>>) {
     try {
       const response = await this.informationService.getAllServices();
       res.status(HttpStatusCode.Ok).json({

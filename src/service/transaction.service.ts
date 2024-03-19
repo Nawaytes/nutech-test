@@ -1,16 +1,13 @@
 import { DateTime } from "luxon";
-import { Op } from "sequelize";
+
 import { messages } from "../config/message";
-import Services from "../database/models/services.model";
-import TransactionModel from "../database/models/transactions.model";
 import { TransactionDto } from "../dto/transaction.dto";
 import { BadRequestException } from "../helper/Error/BadRequestException/BadRequestException";
 import { ITransaction } from "../helper/interface/db/transaction.interface";
-import { IPaginate } from "../helper/interface/paginate/paginate.interface";
 import { IInputTransaction } from "../helper/interface/transaction/transaction.interface";
+import { InformationService } from "./information.service";
 import Database from "./mysql.service";
 import UserService from "./user.service";
-import { InformationService } from "./information.service";
 
 export class TransactionService {
   userService: UserService;
@@ -169,7 +166,6 @@ export class TransactionService {
         ORDER BY created_at DESC
         LIMIT ?, ?`;
 
-      console.log(userId, offset, limit);
       const [rawRows, _f] = await Database.connection.execute(paginateQuery, [
         userId,
         offset.toString(),

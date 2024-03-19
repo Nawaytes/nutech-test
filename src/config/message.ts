@@ -14,4 +14,5 @@ export enum messages {
   SERVICE_NOT_FOUND = "Service ataus Layanan tidak ditemukan",
   BALACE_NOT_ENOUGH = "Saldo anda tidak cukup",
   SUCCESS_TRANSACTION = "Transaksi berhasil",
+  SUCCESS_UPDATE_IMAGE = "Update Profile Image berhasil",
 }

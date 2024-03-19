@@ -1,14 +1,14 @@
 import argon from "argon2";
 import * as fs from "fs";
+
 import configConstants from "../config/constants";
+import { UpdateProfileDTO } from "../dto/updateProfile.dto";
 import { CreateUserDto } from "../dto/user/postUser.dto";
 import { BadRequestException } from "../helper/Error/BadRequestException/BadRequestException";
 import { NotFoundException } from "../helper/Error/NotFound/NotFoundException";
 import { IDetailUser, IUsers } from "../helper/interface/db/users.interface";
 import MinioService from "./minio.service";
 import Database from "./mysql.service";
-import { UpdateProfileDTO } from "../dto/updateProfile.dto";
-import Users, { UserCreationAttributes } from "../database/models/user";
 
 export default class UserService {
   minioService: MinioService;

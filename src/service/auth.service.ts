@@ -1,5 +1,4 @@
 import argon from "argon2";
-import Users from "../database/models/user";
 
 import jwt from "jsonwebtoken";
 import configConstants from "../config/constants";
@@ -7,6 +6,7 @@ import { LoginDto } from "../dto/auth/login.dto";
 import { UnauthorizedException } from "../helper/Error/UnauthorizedException/UnauthorizedException";
 import { messages } from "../config/message";
 import Database from "./mysql.service";
+import { IUsers } from "../helper/interface/db/users.interface";
 export class AuthService {
   async login(input: LoginDto) {
     try {
@@ -26,7 +26,7 @@ export class AuthService {
     }
   }
 
-  async isAccountValid(input: LoginDto): Promise<Users> {
+  async isAccountValid(input: LoginDto): Promise<IUsers> {
     const { email, password } = input;
     await Database.connect();
     const [rows, _] = await Database.connection.execute(
@@ -34,10 +34,10 @@ export class AuthService {
       [email]
     );
     await Database.disconnect();
-    const result: any = rows;
-    if (result.length === 0) throw new Error();
+    const results = rows as IUsers[];
+    if (results.length === 0) throw new Error();
 
-    const user = result[0];
+    const user = results[0];
 
     await this.verifyPassword(user.password, password);
     return user;
