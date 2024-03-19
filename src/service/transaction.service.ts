@@ -1,13 +1,14 @@
 import { DateTime } from "luxon";
 import { Op } from "sequelize";
 import { messages } from "../config/message";
-import InvoiceNo from "../database/models/invoiceNo.model";
 import Services from "../database/models/services.model";
 import TransactionModel from "../database/models/transactions.model";
 import { TransactionDto } from "../dto/transaction.dto";
 import { BadRequestException } from "../helper/Error/BadRequestException/BadRequestException";
+import { ITransaction } from "../helper/interface/db/transaction.interface";
 import { IPaginate } from "../helper/interface/paginate/paginate.interface";
-import { ITransaction } from "../helper/interface/transaction/transaction.interface";
+import { IInputTransaction } from "../helper/interface/transaction/transaction.interface";
+import Database from "./mysql.service";
 import UserService from "./user.service";
 
 export class TransactionService {
@@ -19,20 +20,24 @@ export class TransactionService {
   async getBalance(userId: number): Promise<number> {
     try {
       const user = await this.userService.getById(userId);
-      return parseInt(user.balance as unknown as string);
+      return parseInt(user.balance);
     } catch (error) {
       throw error;
     }
   }
 
-  async topup(userId: number, topUpAmount: any): Promise<number> {
+  async topup(userId: number, topUpAmount: number): Promise<number> {
     try {
       const user = await this.userService.getById(userId);
-      const newBalance: number =
-        parseInt(user.balance as unknown as string) + topUpAmount;
-      const newData = await this.userService.updateById(userId, {
-        balance: newBalance,
-      });
+      const newBalance: number = parseInt(user.balance) + topUpAmount;
+
+      await Database.connect();
+      await Database.connection.execute(
+        "UPDATE users SET balance = ? WHERE id = ?",
+        [newBalance, userId]
+      );
+      await Database.disconnect();
+      const users = await this.userService.getById(userId);
 
       await this.recordTransaction({
         serviceCode: "TOPUP",
@@ -41,7 +46,7 @@ export class TransactionService {
         transactionType: "TOPUP",
         userId,
       });
-      return parseInt(newData.balance as unknown as string);
+      return parseInt(users.balance);
     } catch (error) {
       throw error;
     }
@@ -74,30 +79,52 @@ export class TransactionService {
         userId,
       });
 
-      await this.userService.updateById(userId, {
-        balance: newBalance,
-      });
-
       return {
-        invoice_number: transaction.invoiceNumber,
-        service_code: transaction.serviceCode,
-        service_name: transaction.serviceName,
-        transaction_type: transaction.transactionType,
-        total_amount: transaction.totalAmount,
-        created_on: transaction.createdAt,
+        invoice_number: transaction.invoice_number,
+        service_code: transaction.service_code,
+        service_name: transaction.service_name,
+        transaction_type: transaction.transaction_type,
+        total_amount: transaction.total_amount,
+        created_on: transaction.created_at,
       };
     } catch (error) {
       throw error;
     }
   }
 
-  async recordTransaction(input: ITransaction): Promise<TransactionModel> {
+  async recordTransaction(input: IInputTransaction): Promise<ITransaction> {
     try {
-      const record = await TransactionModel.create({
-        ...input,
-        invoiceNumber: await this.generateInvoiceNo(),
-      });
-      return record;
+      const invoiceNumber = await this.generateInvoiceNo();
+      await Database.connect();
+      const query = `INSERT INTO 
+        transactions 
+        (
+          invoice_number, 
+          service_code, 
+          service_name, 
+          transaction_type, 
+          total_amount,
+          user_id
+        ) VALUES
+        (
+          ?,?,?,?,?,?
+        )`;
+      const queryParams = [
+        invoiceNumber,
+        input.serviceCode,
+        input.serviceName,
+        input.transactionType,
+        input.totalAmount,
+        input.userId,
+      ];
+      await Database.connection.execute(query, queryParams);
+      const [rows, _] = await Database.connection.execute(
+        "SELECT * FROM transactions WHERE invoice_number = ?",
+        [invoiceNumber]
+      );
+      const record = rows as ITransaction[];
+      await Database.disconnect();
+      return record[0];
     } catch (error) {
       throw error;
     }
@@ -105,17 +132,19 @@ export class TransactionService {
 
   async generateInvoiceNo(): Promise<string> {
     try {
-      await InvoiceNo.create();
+      await Database.connect();
+      await Database.connection.execute("INSERT INTO invoice_no () VALUES ()");
       const startOfDay = DateTime.local().startOf("day").toJSDate();
       const endOfDay = DateTime.local().endOf("day").toJSDate();
-
-      const { count } = await InvoiceNo.findAndCountAll({
-        where: {
-          createdAt: {
-            [Op.between]: [startOfDay, endOfDay],
-          },
-        },
-      });
+      const query = `
+        SELECT COUNT(*) AS count
+        FROM invoice_no
+        WHERE created_at BETWEEN ? AND ?
+      `;
+      const queryParams = [startOfDay, endOfDay];
+      const [rows, _] = await Database.connection.execute(query, queryParams);
+      const count = (rows as any[])[0].count;
+      await Database.disconnect();
       return `INV${DateTime.local().toFormat("ddLLyyyy")}-${count
         .toString()
         .padStart(3, "0")}`;

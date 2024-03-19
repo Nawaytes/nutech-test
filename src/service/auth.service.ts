@@ -30,7 +30,7 @@ export class AuthService {
     const { email, password } = input;
     await Database.connect();
     const [rows, _] = await Database.connection.execute(
-      "SELECT * FROM users WHERE email = ?",
+      "SELECT * FROM users WHERE email = ? AND deleted_at IS null",
       [email]
     );
     await Database.disconnect();

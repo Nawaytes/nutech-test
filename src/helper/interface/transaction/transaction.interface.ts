@@ -1,4 +1,4 @@
-export interface ITransaction {
+export interface IInputTransaction {
   userId: number;
   serviceCode: string;
   serviceName: string;

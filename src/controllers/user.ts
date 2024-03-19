@@ -6,6 +6,7 @@ import { ProcessError } from "../helper/Error/errorHandler";
 import { ResponseApi } from "../helper/interface/response.interface";
 import UserService from "../service/user.service";
 import { error } from "console";
+import { IDetailUser, IUsers } from "../helper/interface/db/users.interface";
 
 export class UserController {
   userServices: UserService;
@@ -27,7 +28,7 @@ export class UserController {
     }
   }
 
-  async detail(req: Request, res: Response<ResponseApi<Users>>) {
+  async detail(req: Request, res: Response<ResponseApi<IUsers>>) {
     try {
       const response = await this.userServices.detail(req.user.id);
       res.json({
@@ -40,7 +41,7 @@ export class UserController {
     }
   }
 
-  async updateProfile(req: Request, res: Response<ResponseApi<Users>>) {
+  async updateProfile(req: Request, res: Response<ResponseApi<IDetailUser>>) {
     try {
       const response = await this.userServices.updateProfileById(
         req.user.id,
