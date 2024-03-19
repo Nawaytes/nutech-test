@@ -158,45 +158,38 @@ export class TransactionService {
     }
   }
 
-  async page(
-    userId: number,
-    offset: number,
-    limit: number
-  ): Promise<IPaginate<any[]>> {
+  async page(userId: number, page: number, limit: number) {
     try {
-      const transactions = await TransactionModel.paginate({
-        page: offset,
-        limit: limit,
-        searchConditions: [
-          {
-            keySearch: "userId",
-            keyValue: userId,
-            operator: Op.eq,
-          },
-        ],
-        attributes: [
-          "invoice_number",
-          "transaction_type",
-          "service_name",
-          "total_amount",
-          "created_at",
-        ],
-      });
-      const record = transactions.data.map((value: TransactionModel) => {
-        const valueJson: any = value.toJSON();
+      await Database.connect();
+      const offset = Math.max(page - 1, 0) * Math.abs(limit);
+      const paginateQuery = `
+        SELECT invoice_number, transaction_type, service_name AS description, total_amount, created_at AS created_on
+        FROM transactions
+        WHERE user_id = ?
+        ORDER BY created_at DESC
+        LIMIT ?, ?`;
 
-        return {
-          invoice_number: valueJson.invoice_number,
-          transaction_type: valueJson.transaction_type,
-          description: valueJson.service_name,
-          total_amount: valueJson.total_amount,
-          created_on: valueJson.created_at,
-        };
-      });
+      console.log(userId, offset, limit);
+      const [rawRows, _f] = await Database.connection.execute(paginateQuery, [
+        userId,
+        offset.toString(),
+        limit.toString(),
+      ]);
+      const rows = rawRows as any[];
+      await Database.disconnect();
+
+      const records = rows.map((row) => ({
+        invoice_number: row.invoice_number,
+        transaction_type: row.transaction_type,
+        description: row.description,
+        total_amount: row.total_amount,
+        created_on: row.created_on,
+      }));
+
       return {
         limit,
         offset,
-        records: record,
+        records,
       };
     } catch (error) {
       throw error;

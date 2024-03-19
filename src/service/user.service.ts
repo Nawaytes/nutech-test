@@ -106,18 +106,6 @@ export default class UserService {
     }
   }
 
-  // async updateById(
-  //   id: number,
-  //   conditions: Partial<UserCreationAttributes>
-  // ): Promise<IUsers> {
-  //   try {
-  //     await Users.update({ ...conditions }, { where: { id } });
-  //     return await this.getById(id);
-  //   } catch (error) {
-  //     throw error;
-  //   }
-  // }
-
   async updateImage(userId: number, file: Express.Multer.File) {
     try {
       const imageUrl = await this.minioService.uploadFile(
