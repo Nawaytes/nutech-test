@@ -1,4 +1,4 @@
-# Express TypeScript Sequelize Starter Project
+<!-- # Express TypeScript Sequelize Starter Project
 
 This project is a demonstration of scripts and Sequelize CLI commands.
 
@@ -64,4 +64,28 @@ sequelize-cli migration:create                  # Generates a new migration file
 sequelize-cli model:generate                    # Generates a model and its migration
 sequelize-cli model:create                      # Generates a model and its migration
 sequelize-cli seed:generate                     # Generates a new seed file
-sequelize-cli seed:create                       # Generates a new seed file
+sequelize-cli seed:create                       # Generates a new seed file -->
+
+# NUTECH TEST REPOSITORY - SIMS PPOB 
+
+### Backend Node JS - Express JS
+
+### LIVE API
+
+https://nutech-test-production.up.railway.app/
+
+### ERD
+
+![erd](/asset/erd.jpg)
+
+### Database
+
+- Mysql
+
+### 3rd party
+
+- Minio Object Storage
+
+### Postman Example Response
+
+https://documenter.getpostman.com/view/17648679/2sA2xpTUnT
