@@ -10,12 +10,15 @@ import { IPaginate } from "../helper/interface/paginate/paginate.interface";
 import { IInputTransaction } from "../helper/interface/transaction/transaction.interface";
 import Database from "./mysql.service";
 import UserService from "./user.service";
+import { InformationService } from "./information.service";
 
 export class TransactionService {
   userService: UserService;
+  informationService: InformationService;
 
   constructor() {
     this.userService = new UserService();
+    this.informationService = new InformationService();
   }
   async getBalance(userId: number): Promise<number> {
     try {
@@ -25,18 +28,21 @@ export class TransactionService {
       throw error;
     }
   }
-
+  async updateBalance(userId: number, balance: number) {
+    await Database.connect();
+    const query = `
+    UPDATE users SET balance = ? WHERE id = ?
+    `;
+    const queryParams = [balance, userId];
+    await Database.connection.execute(query, queryParams);
+    await Database.disconnect();
+  }
   async topup(userId: number, topUpAmount: number): Promise<number> {
     try {
       const user = await this.userService.getById(userId);
       const newBalance: number = parseInt(user.balance) + topUpAmount;
 
-      await Database.connect();
-      await Database.connection.execute(
-        "UPDATE users SET balance = ? WHERE id = ?",
-        [newBalance, userId]
-      );
-      await Database.disconnect();
+      await this.updateBalance(userId, newBalance);
       const users = await this.userService.getById(userId);
 
       await this.recordTransaction({
@@ -54,27 +60,26 @@ export class TransactionService {
 
   async transaction(userId: number, input: TransactionDto) {
     try {
-      const service = await Services.findOne({
-        where: {
-          serviceCode: input.service_code,
-        },
-      });
+      const service = await this.informationService.getByServiceCode(
+        input.service_code
+      );
 
       const user = await this.userService.getById(userId);
 
       if (!service) {
         throw new BadRequestException(messages.SERVICE_NOT_FOUND, 102);
       }
-      const balance = parseInt(user.balance as unknown as string);
-      const tarif = parseInt(service.serviceTariff as unknown as string);
+      const balance = parseInt(user.balance);
+      const tarif = parseInt(service.service_tariff as string);
       if (balance < tarif) {
         throw new BadRequestException(messages.BALACE_NOT_ENOUGH, 102);
       }
       const newBalance = balance - tarif;
+      await this.updateBalance(userId, newBalance);
       const transaction = await this.recordTransaction({
-        serviceCode: service.serviceCode,
-        serviceName: service.serviceName,
-        totalAmount: service.serviceTariff,
+        serviceCode: service.service_code,
+        serviceName: service.service_name,
+        totalAmount: parseInt(service.service_tariff as string),
         transactionType: "PAYMENT",
         userId,
       });
@@ -84,7 +89,7 @@ export class TransactionService {
         service_code: transaction.service_code,
         service_name: transaction.service_name,
         transaction_type: transaction.transaction_type,
-        total_amount: transaction.total_amount,
+        total_amount: parseInt(transaction.total_amount),
         created_on: transaction.created_at,
       };
     } catch (error) {
