@@ -10,7 +10,6 @@ export class InformationService {
       await Database.disconnect();
       return rows;
     } catch (error) {
-      await Database.disconnect();
       throw error;
     }
   }
@@ -25,7 +24,6 @@ export class InformationService {
 
       return rows;
     } catch (error) {
-      await Database.disconnect();
       throw error;
     }
   }

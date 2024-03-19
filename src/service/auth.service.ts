@@ -6,15 +6,16 @@ import configConstants from "../config/constants";
 import { LoginDto } from "../dto/auth/login.dto";
 import { UnauthorizedException } from "../helper/Error/UnauthorizedException/UnauthorizedException";
 import { messages } from "../config/message";
+import Database from "./mysql.service";
 export class AuthService {
   async login(input: LoginDto) {
     try {
       const user = await this.isAccountValid(input);
-      const userJson = user.toJSON();
+
       const payload = {
-        id: userJson.id,
-        name: userJson.first_name,
-        email: userJson.email,
+        id: user.id,
+        name: user.first_name,
+        email: user.email,
       };
       const token = await this.generateToken(payload);
       return {
@@ -27,9 +28,18 @@ export class AuthService {
 
   async isAccountValid(input: LoginDto): Promise<Users> {
     const { email, password } = input;
-    const user = await Users.findOne({ where: { email } });
-    if (!user) throw new Error();
-    await this.verifyPassword(user.password!, password);
+    await Database.connect();
+    const [rows, _] = await Database.connection.execute(
+      "SELECT * FROM users WHERE email = ?",
+      [email]
+    );
+    await Database.disconnect();
+    const result: any = rows;
+    if (result.length === 0) throw new Error();
+
+    const user = result[0];
+
+    await this.verifyPassword(user.password, password);
     return user;
   }
 
